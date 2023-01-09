@@ -2,10 +2,11 @@ import bot from "/assets/bot.svg"
 import user from "/assets/user.svg"
 
 const form = document.querySelector('form');
-const chatContainer = document.querySelector('chat_container');
+const chatContainer = document.querySelector('#chat_container');
 
 let loadInterval;
 
+// loading animation for ai
 function loader(element) {
   element.textContent = '';
 
@@ -36,20 +37,20 @@ function typeText(element, text) {
 function genUID() {
   const timestamp = Date.now()
   const randomNum = Math.random();
-  const hexadeciamlString = randomNumber.toString(16);
+  const hexadeciamlString = randomNum.toString(16);
 
-  return `id-${timestamp} - ${hexadeciamlString}`;
+  return `id-${timestamp}-${hexadeciamlString}`;
 }
 
-function chatStripe(isAI, value, unique) {
+function chatStripe(isAI, value, uniqueId) {
   return (
     `
       <div class="wrapper ${isAI && 'ai'}">
         <div class="chat">
           <div className="profile">
             <img
-              src="${isAi ? bot : user}"
-              alt="${isAi ? 'bot' : 'user'}"
+              src="${isAI ? bot : user}"
+              alt="${isAI ? 'bot' : 'user'}"
             />
           </div>
           <div class="message" id=${uniqueId}>${value}</div>
@@ -65,27 +66,30 @@ const handleSubmit = async (e) => {
   const data = new FormData(form);
 
   // user chatstripe
-
   chatContainer.innerHTML += chatStripe(false, data.get('prompt'))
 
+  // clear text area
   form.reset();
 
   //bots chatstripe
-  const uniqueId = generateUniqueId();
+  const uniqueId = genUID();
   chatContainer.innerHTML += chatStripe(true, " ", uniqueId);
 
+  // focus scroll to bottom
   chatContainer.scrollTop = chatContainer.scrollHeight;
 
+  //specific msg div
   const messageDiv = document.getElementById(uniqueId);
 
+  console.log(messageDiv);
+
+  // messageDiv.innerHTNL = "..."
   loader(messageDiv);
 }
 
 form.addEventListener('submit', handleSubmit)
 form.addEventListener('keyup', (e) => {
-    if (e.key === 'Enter') {
+    if (e.keyCode === 13) {
         handleSubmit(e);
     }
 })
-
-
